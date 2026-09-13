@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/pinctrl/mt65xx.h>
+
 #include "mt7981b.dtsi"
+
 / {
 	model = "ASUS RT-AX52";
 	compatible = "asus,rt-ax52", "mediatek,mt7981";
@@ -20,20 +28,20 @@
 	};
 
 	memory@40000000 {
-		reg = <0 0x40000000 0 0x10000000>;
 		device_type = "memory";
+		reg = <0 0x40000000 0 0x10000000>;
 	};
 
-	keys {
+	gpio-keys {
 		compatible = "gpio-keys";
 
-		reset {
+		key-reset {
 			label = "reset";
 			gpios = <&pio 1 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_RESTART>;
 		};
 
-		wps {
+		key-wps {
 			label = "wps";
 			gpios = <&pio 0 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
@@ -86,6 +94,8 @@
 };
 
 &eth {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mdio_pins>;
 	status = "okay";
 
 	gmac0: mac@0 {
