@@ -334,10 +334,14 @@
 };
 
 &usb_0 {
+	dr_mode = "host";
+
 	status = "okay";
 };
 
 &usb_1 {
+	dr_mode = "host";
+
 	status = "okay";
 };
 
@@ -463,5 +467,5 @@
 &wifi {
 	status = "okay";
 
-	qcom,ath11k-calibration-variant = "Compex-WPQ873";
+	qcom,calibration-variant = "Compex-WPQ873";
 };

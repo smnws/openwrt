@@ -253,6 +253,8 @@
 };
 
 &usb_0 {
+	dr_mode = "host";
+
 	status = "okay";
 };
 
@@ -391,5 +393,5 @@
 
 &wifi {
 	status = "okay";
-	qcom,ath11k-calibration-variant = "Yuncore-AX880";
+	qcom,calibration-variant = "Yuncore-AX880";
 };
