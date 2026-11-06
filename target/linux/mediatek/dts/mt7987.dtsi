@@ -34,8 +34,8 @@
 	vproc: regulator-vproc {
 		compatible = "regulator-fixed";
 		regulator-name = "proc";
-		regulator-min-microvolt = <8500000>;
-		regulator-max-microvolt = <8500000>;
+		regulator-min-microvolt = <850000>;
+		regulator-max-microvolt = <850000>;
 		regulator-boot-on;
 		regulator-always-on;
 	};
