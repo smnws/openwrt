@@ -86,7 +86,7 @@
 	fan-supply = <&fan_3p3v>;
 	interrupt-parent = <&pio>;
 	interrupts = <5 IRQ_TYPE_EDGE_RISING>;
-	pwms = <&pwm 1 50000 0>;
+	pwms = <&pwm 1 50000>;
 	status = "okay";
 };
 

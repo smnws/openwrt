@@ -240,7 +240,6 @@
 		compatible = "pwm-fan";
 		cooling-levels = <0 128 192 255>;
 		#cooling-cells = <2>;
-		#thermal-sensor-cells = <1>;
 		status = "disabled";
 	};
 
