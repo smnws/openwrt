@@ -13,6 +13,12 @@
 	model = "GL.iNet GL-MT3600BE";
 	compatible = "glinet,gl-mt3600be", "mediatek,mt7987a", "mediatek,mt7987";
 
+	/delete-node/ memory;
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0 0x40000000 0 0x20000000>;
+	};
+
 	aliases {
 		serial0 = &uart0;
 		label-mac-device = &gmac0;
@@ -90,11 +96,27 @@
 	};
 };
 
+&cpu0 {
+	proc-supply = <&vproc>;
+};
+
+&cpu1 {
+	proc-supply = <&vproc>;
+};
+
+&cpu2 {
+	proc-supply = <&vproc>;
+};
+
+&cpu3 {
+	proc-supply = <&vproc>;
+};
+
 &fan {
 	fan-supply = <&fan_3p3v>;
 	interrupt-parent = <&pio>;
 	interrupts = <5 IRQ_TYPE_EDGE_RISING>;
-	pwms = <&pwm 1 50000 0>;
+	pwms = <&pwm 1 50000>;
 	status = "okay";
 };
 
@@ -144,14 +166,14 @@
 
 	pcie@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
 
 		wifi@0,0 {
 			compatible = "mediatek,mt76";
 			reg = <0x0000 0 0 0 0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
-			device_type = "pci";
 
 			ieee80211-freq-limit = <2400000 2500000>,
 					       <5170000 5835000>;
