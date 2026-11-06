@@ -1,9 +1,12 @@
 From: smnws <117300309+smnws@users.noreply.github.com>
-Subject: [PATCH] dt-bindings: net: mediatek: allow one WED on MT7981
+Subject: [PATCH] dt-bindings: net: mediatek: model MT7981 dependencies
 
-MT7981 has one WED engine. Permit its single phandle without adding a
-nonexistent second engine or weakening the two-entry constraint on other
-SoCs. Keep the existing MT7981 Ethernet driver representation.
+MT7981 has one WED engine. Permit its single phandle while preserving
+the two-entry constraint on other SoCs.
+
+The driver also requires the topmisc regmap for the USB/QPHY mux path.
+Allow and require mediatek,infracfg on MT7981; omitting it prevents
+Ethernet from probing before any MAC or switch interface is registered.
 ---
 --- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
 +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
@@ -16,13 +19,20 @@ SoCs. Keep the existing MT7981 Ethernet driver representation.
      maxItems: 2
      items:
        maxItems: 1
-@@ -343,6 +343,13 @@
+@@ -338,11 +338,18 @@
+             - const: netsys0
+             - const: netsys1
+ 
+-        mediatek,infracfg: false
+-
          mediatek,sgmiisys:
            minItems: 2
            maxItems: 2
 +
 +        mediatek,wed:
 +          maxItems: 1
++      required:
++        - mediatek,infracfg
 +    else:
 +      properties:
 +        mediatek,wed:

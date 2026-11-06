@@ -4,7 +4,7 @@ Subject: [PATCH] arm64: dts: mediatek: modernize MT7981 Ethernet resources
 Describe the Ethernet SRAM as a non-overlapping mmio-sram pool and name
 the FE/PDMA interrupts. The fe1/fe2 mapping and SRAM address/size match
 the driver's existing legacy fallbacks. Reorder clocks with their names
-to match the binding, and remove unused mediatek,infracfg on MT7981.
+to match the binding. Retain the required mediatek,infracfg phandle.
 
 Preserve WED, PHY, switch, lane polarity and board timer configuration.
 ---
@@ -37,7 +37,7 @@ Preserve WED, PHY, switch, lane polarity and board timer configuration.
  				<&sgmiisys0 CLK_SGM0_TX_EN>,
  				<&sgmiisys0 CLK_SGM0_RX_EN>,
  				<&sgmiisys0 CLK_SGM0_CK0_EN>,
-@@ -454,22 +461,21 @@
+@@ -454,19 +461,19 @@
  				<&sgmiisys1 CLK_SGM1_RX_EN>,
  				<&sgmiisys1 CLK_SGM1_CK1_EN>,
  				<&sgmiisys1 CLK_SGM1_CDR_CK1_EN>,
@@ -59,11 +59,8 @@ Preserve WED, PHY, switch, lane polarity and board timer configuration.
 +			sram = <&eth_sram>;
  			mediatek,ethsys = <&ethsys>;
  			mediatek,sgmiisys = <&sgmiisys0>, <&sgmiisys1>;
--			mediatek,infracfg = <&topmisc>;
- 			mediatek,wed = <&wed>;
- 			mediatek,wed-pcie = <&wed_pcie>;
- 			status = "disabled";
-@@ -519,6 +525,14 @@
+ 			mediatek,infracfg = <&topmisc>;
+@@ -519,6 +526,14 @@
  		wo_cpuboot: syscon@15194000 {
  			compatible = "mediatek,mt7986-wo-cpuboot", "syscon";
  			reg = <0 0x15194000 0 0x1000>;
