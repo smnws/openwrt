@@ -1,0 +1,54 @@
+From 98b3e92a71919bfc74cf95508161493712231a0d Mon Sep 17 00:00:00 2001
+From: Simon Wiesend <smnws@proton.me>
+Date: Fri, 6 Nov 2026 21:02:00 +0100
+Subject: [PATCH 1/2] dt-bindings: net: mediatek: fix MT7981 resource
+ constraints
+
+MT7981 has one WED engine, and its driver requires an infracfg syscon
+for the USB/QPHY mux. Allow a single WED phandle on MT7981 while keeping
+the existing two-entry constraint on other SoCs, and require infracfg
+instead of rejecting it.
+
+MT7981_CAPS inherits MTK_INFRA through the QPHY mux capability. Omitting
+the phandle makes mtk_probe() fail before registering Ethernet interfaces.
+
+Signed-off-by: Simon Wiesend <smnws@proton.me>
+---
+ .../devicetree/bindings/net/mediatek,net.yaml       | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+index b45f67f..1f4c152 100644
+--- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+@@ -112,7 +112,7 @@ properties:
+ 
+   mediatek,wed:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+-    minItems: 2
++    minItems: 1
+     maxItems: 2
+     items:
+       maxItems: 1
+@@ -338,12 +338,19 @@ allOf:
+             - const: netsys0
+             - const: netsys1
+ 
+-        mediatek,infracfg: false
+-
+         mediatek,sgmiisys:
+           minItems: 2
+           maxItems: 2
+ 
++        mediatek,wed:
++          maxItems: 1
++      required:
++        - mediatek,infracfg
++    else:
++      properties:
++        mediatek,wed:
++          minItems: 2
++
+   - if:
+       properties:
+         compatible:
