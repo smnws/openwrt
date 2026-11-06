@@ -1,0 +1,32 @@
+From: smnws <117300309+smnws@users.noreply.github.com>
+Subject: [PATCH] dt-bindings: net: mediatek: allow one WED on MT7981
+
+MT7981 has one WED engine. Permit its single phandle without adding a
+nonexistent second engine or weakening the two-entry constraint on other
+SoCs. Keep the existing MT7981 Ethernet driver representation.
+---
+--- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
++++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
+@@ -112,7 +112,7 @@
+ 
+   mediatek,wed:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+-    minItems: 2
++    minItems: 1
+     maxItems: 2
+     items:
+       maxItems: 1
+@@ -343,6 +343,13 @@
+         mediatek,sgmiisys:
+           minItems: 2
+           maxItems: 2
++
++        mediatek,wed:
++          maxItems: 1
++    else:
++      properties:
++        mediatek,wed:
++          minItems: 2
+ 
+   - if:
+       properties:
