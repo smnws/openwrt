@@ -1,0 +1,87 @@
+From 396779dc100098158688bf6209dc5a9844540d52 Mon Sep 17 00:00:00 2001
+From: Simon Wiesend <smnws@proton.me>
+Date: Fri, 6 Nov 2026 21:02:00 +0100
+Subject: [PATCH 2/2] arm64: dts: mediatek: describe MT7981 Ethernet resources
+
+Split Ethernet SRAM into a non-overlapping mmio-sram pool and add the
+FE/PDMA interrupt names. Preserve the SRAM address and size and the
+fe1/fe2 TX/RX mapping used by the driver's legacy fallback.
+
+Reorder clocks together with their names to match the binding. Retain
+the required infracfg, WED and PHY references and board timer settings.
+This removes the legacy SRAM and interrupt-name warnings.
+
+Signed-off-by: Simon Wiesend <smnws@proton.me>
+---
+ arch/arm64/boot/dts/mediatek/mt7981b.dtsi | 25 ++++++++++++++++++-----
+ 1 file changed, 20 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+index b9e78f9..5b2dda5 100644
+--- a/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt7981b.dtsi
+@@ -435,17 +435,24 @@
+ 
+ 		eth: ethernet@15100000 {
+ 			compatible = "mediatek,mt7981-eth";
+-			reg = <0 0x15100000 0 0x80000>;
++			reg = <0 0x15100000 0 0x40000>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
+-				     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
++				     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 189 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 190 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 191 IRQ_TYPE_LEVEL_HIGH>,
++				     <GIC_SPI 192 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "fe0", "fe1", "fe2", "fe3", "pdma0",
++					  "pdma1", "pdma2", "pdma3";
+ 			clocks = <&ethsys CLK_ETH_FE_EN>,
+ 				<&ethsys CLK_ETH_GP2_EN>,
+ 				<&ethsys CLK_ETH_GP1_EN>,
+ 				<&ethsys CLK_ETH_WOCPU0_EN>,
++				<&topckgen CLK_TOP_SGM_REG>,
+ 				<&sgmiisys0 CLK_SGM0_TX_EN>,
+ 				<&sgmiisys0 CLK_SGM0_RX_EN>,
+ 				<&sgmiisys0 CLK_SGM0_CK0_EN>,
+@@ -454,19 +461,19 @@
+ 				<&sgmiisys1 CLK_SGM1_RX_EN>,
+ 				<&sgmiisys1 CLK_SGM1_CK1_EN>,
+ 				<&sgmiisys1 CLK_SGM1_CDR_CK1_EN>,
+-				<&topckgen CLK_TOP_SGM_REG>,
+ 				<&topckgen CLK_TOP_NETSYS_SEL>,
+ 				<&topckgen CLK_TOP_NETSYS_500M_SEL>;
+-			clock-names = "fe", "gp2", "gp1", "wocpu0",
++			clock-names = "fe", "gp2", "gp1", "wocpu0", "sgmii_ck",
+ 						"sgmii_tx250m", "sgmii_rx250m",
+ 						"sgmii_cdr_ref", "sgmii_cdr_fb",
+ 						"sgmii2_tx250m", "sgmii2_rx250m",
+ 						"sgmii2_cdr_ref", "sgmii2_cdr_fb",
+-						"sgmii_ck", "netsys0", "netsys1";
++						"netsys0", "netsys1";
+ 			assigned-clocks = <&topckgen CLK_TOP_NETSYS_2X_SEL>,
+ 					  <&topckgen CLK_TOP_SGM_325M_SEL>;
+ 			assigned-clock-parents = <&topckgen CLK_TOP_CB_NET2_800M>,
+ 						 <&topckgen CLK_TOP_CB_SGM_325M>;
++			sram = <&eth_sram>;
+ 			mediatek,ethsys = <&ethsys>;
+ 			mediatek,sgmiisys = <&sgmiisys0>, <&sgmiisys1>;
+ 			mediatek,infracfg = <&topmisc>;
+@@ -521,6 +528,14 @@
+ 			reg = <0 0x15194000 0 0x1000>;
+ 		};
+ 
++		eth_sram: sram@15140000 {
++			compatible = "mmio-sram";
++			reg = <0 0x15140000 0 0x40000>;
++			ranges = <0 0 0x15140000 0x40000>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++		};
++
+ 		wo_ccif0: syscon@151a5000 {
+ 			compatible = "mediatek,mt7986-wo-ccif", "syscon";
+ 			reg = <0 0x151a5000 0 0x1000>;
