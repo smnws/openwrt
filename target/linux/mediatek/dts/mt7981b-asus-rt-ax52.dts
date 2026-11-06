@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /dts-v1/;
+#include <dt-bindings/interrupt-controller/irq.h>
 #include "mt7981b.dtsi"
 / {
 	model = "ASUS RT-AX52";
@@ -115,6 +116,11 @@
 		compatible = "mediatek,mt7531";
 		reg = <31>;
 		reset-gpios = <&pio 39 GPIO_ACTIVE_HIGH>;
+
+		interrupt-controller;
+		#interrupt-cells = <1>;
+		interrupt-parent = <&pio>;
+		interrupts = <38 IRQ_TYPE_LEVEL_HIGH>;
 
 		ports {
 			#address-cells = <1>;
