@@ -166,14 +166,14 @@
 
 	pcie@0,0 {
 		reg = <0x0000 0 0 0 0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
 
 		wifi@0,0 {
 			compatible = "mediatek,mt76";
 			reg = <0x0000 0 0 0 0>;
 			#address-cells = <1>;
 			#size-cells = <0>;
-
-			device_type = "pci";
 
 			ieee80211-freq-limit = <2400000 2500000>,
 					       <5170000 5835000>;
