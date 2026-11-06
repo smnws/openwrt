@@ -71,6 +71,14 @@
 		regulator-max-microvolt = <3300000>;
 	};
 
+	usb_3p3v: regulator-usb-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "usb-3p3v";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+
 	usb_vbus: regulator-usb-vbus {
 		compatible = "regulator-fixed";
 		enable-active-high;
@@ -278,6 +286,7 @@
 
 &ssusb {
 	vbus-supply = <&usb_vbus>;
+	vusb33-supply = <&usb_3p3v>;
 	status = "okay";
 };
 

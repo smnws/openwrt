@@ -1,0 +1,54 @@
+--- a/boot/Kconfig
++++ b/boot/Kconfig
+@@ -2051,3 +2051,11 @@
+ endmenu		# Configuration editor
+ 
+ endmenu		# Booting
++
++config KASLR_SEED_REQUIRED
++	bool "Require fresh hardware KASLR seed on each Linux FDT handoff"
++	depends on DM_RNG && OF_LIBFDT
++	depends on !MEASURED_BOOT && !ARMV8_SEC_FIRMWARE_SUPPORT
++	help
++	  Replace any existing kaslr-seed with eight fresh RNG bytes during
++	  fdt_chosen(). Abort Linux handoff on RNG or FDT insertion failure.
+--- a/boot/fdt_support.c
++++ b/boot/fdt_support.c
+@@ -302,6 +302,12 @@
+ 		debug("not overwriting existing kaslr-seed\n");
+ 		return 0;
+ 	}
++	/* A failed refresh must not leave an old seed in the working FDT. */
++	if (overwrite) {
++		err = fdt_delprop(fdt, nodeoffset, "kaslr-seed");
++		if (err && err != -FDT_ERR_NOTFOUND)
++			return err;
++	}
+ 	err = uclass_get_device(UCLASS_RNG, 0, &dev);
+ 	if (err) {
+ 		printf("No RNG device\n");
+@@ -312,7 +318,7 @@
+ 		dev_err(dev, "dm_rng_read failed: %d\n", err);
+ 		return err;
+ 	}
+-	err = fdt_setprop(fdt, nodeoffset, "kaslr-seed", &data, sizeof(data));
++	err = fdt_setprop_u64(fdt, nodeoffset, "kaslr-seed", data);
+ 	if (err < 0)
+ 		printf("WARNING: could not set kaslr-seed %s.\n", fdt_strerror(err));
+ 
+@@ -353,8 +359,13 @@
+ 	 */
+ 	if (IS_ENABLED(CONFIG_DM_RNG) &&
+ 	    !IS_ENABLED(CONFIG_MEASURED_BOOT) &&
+-	    !IS_ENABLED(CONFIG_ARMV8_SEC_FIRMWARE_SUPPORT))
+-		fdt_kaslrseed(fdt, false);
++	    !IS_ENABLED(CONFIG_ARMV8_SEC_FIRMWARE_SUPPORT)) {
++		err = fdt_kaslrseed(fdt, IS_ENABLED(CONFIG_KASLR_SEED_REQUIRED));
++		if (err && IS_ENABLED(CONFIG_KASLR_SEED_REQUIRED)) {
++			printf("ERROR: fresh KASLR seed unavailable (%d); refusing boot\n", err);
++			return err;
++		}
++	}
+ 
+ 	if (IS_ENABLED(CONFIG_BOARD_RNG_SEED) && !board_rng_seed(&buf)) {
+ 		err = fdt_setprop(fdt, nodeoffset, "rng-seed",

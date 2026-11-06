@@ -1,0 +1,239 @@
+--- /dev/null
++++ b/configs/mt7987_glinet_gl-mt3600be_defconfig
+@@ -0,0 +1,111 @@
++CONFIG_ARM=y
++CONFIG_SYS_HAS_NONCACHED_MEMORY=y
++CONFIG_POSITION_INDEPENDENT=y
++CONFIG_ARCH_MEDIATEK=y
++CONFIG_TEXT_BASE=0x41e00000
++CONFIG_SYS_MALLOC_F_LEN=0x4000
++CONFIG_NR_DRAM_BANKS=1
++CONFIG_DEFAULT_DEVICE_TREE="mt7987a-glinet-gl-mt3600be"
++CONFIG_TARGET_MT7987=y
++CONFIG_SYS_BOOTM_LEN=0x6000000
++CONFIG_SYS_LOAD_ADDR=0x48000000
++CONFIG_DEBUG_UART_BASE=0x11000000
++CONFIG_DEBUG_UART_CLOCK=40000000
++CONFIG_DEBUG_UART=y
++CONFIG_FIT=y
++CONFIG_AUTOBOOT=y
++CONFIG_BOOTDELAY=3
++CONFIG_DEFAULT_FDT_FILE="mt7987a-glinet-gl-mt3600be"
++CONFIG_SYS_CBSIZE=512
++CONFIG_SYS_PBSIZE=1049
++CONFIG_LOGLEVEL=4
++CONFIG_LOG=y
++# CONFIG_BOARD_INIT is not set
++CONFIG_SYS_PROMPT="Beryl7> "
++# CONFIG_BOOTM_PLAN9 is not set
++# CONFIG_BOOTM_RTEMS is not set
++# CONFIG_BOOTM_VXWORKS is not set
++# CONFIG_CMD_ELF is not set
++# CONFIG_CMD_XIMG is not set
++# CONFIG_CMD_UNLZ4 is not set
++# CONFIG_CMD_UNZIP is not set
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_PWM=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MTD=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_SMC=y
++CONFIG_ENV_OVERWRITE=y
++CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG=y
++CONFIG_USE_IPADDR=y
++CONFIG_IPADDR="192.168.1.1"
++CONFIG_USE_NETMASK=y
++CONFIG_NETMASK="255.255.255.0"
++CONFIG_USE_SERVERIP=y
++CONFIG_SERVERIP="192.168.1.2"
++CONFIG_NET_RANDOM_ETHADDR=y
++CONFIG_CLK=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_MTK=y
++# CONFIG_MMC is not set
++CONFIG_MTD=y
++CONFIG_DM_MTD=y
++CONFIG_MTD_SPI_NAND=y
++CONFIG_DM_SPI_FLASH=y
++CONFIG_SPI_FLASH_SFDP_SUPPORT=y
++CONFIG_SPI_FLASH_ATMEL=y
++CONFIG_SPI_FLASH_EON=y
++CONFIG_SPI_FLASH_GIGADEVICE=y
++CONFIG_SPI_FLASH_ISSI=y
++CONFIG_SPI_FLASH_MACRONIX=y
++CONFIG_SPI_FLASH_PUYA=y
++CONFIG_SPI_FLASH_SILICONKAISER=y
++CONFIG_SPI_FLASH_SPANSION=y
++CONFIG_SPI_FLASH_STMICRO=y
++CONFIG_SPI_FLASH_WINBOND=y
++CONFIG_SPI_FLASH_XMC=y
++CONFIG_SPI_FLASH_XTX=y
++CONFIG_SPI_FLASH_ZBIT=y
++CONFIG_SPI_FLASH_MTD=y
++CONFIG_MTD_UBI=y
++CONFIG_OF_LIBFDT_OVERLAY=y
++# CONFIG_MEDIATEK_ETH is not set
++CONFIG_PHY_ETHERNET_ID=y
++CONFIG_PINCTRL=y
++CONFIG_PINCONF=y
++CONFIG_PINCTRL_MT7987=y
++CONFIG_POWER_DOMAIN=y
++CONFIG_MTK_POWER_DOMAIN=y
++CONFIG_DM_PWM=y
++CONFIG_PWM_MTK=y
++CONFIG_DM_SERIAL=y
++CONFIG_MTK_SERIAL=y
++CONFIG_SPI=y
++CONFIG_DM_SPI=y
++CONFIG_MTK_SPIM=y
++CONFIG_HEXDUMP=y
++CONFIG_SYS_BOARD="gl-mt3600be"
++CONFIG_DM_GPIO=y
++CONFIG_ENV_IS_NOWHERE=y
++CONFIG_ENV_USE_DEFAULT_ENV_TEXT_FILE=y
++CONFIG_ENV_DEFAULT_ENV_TEXT_FILE="defenvs/gl-mt3600be_env"
++CONFIG_USE_BOOTCOMMAND=y
++CONFIG_BOOTCOMMAND="run boot_stock"
++CONFIG_HUSH_PARSER=y
++CONFIG_CMD_UBI=y
++CONFIG_MTD_PARTITIONS=y
++CONFIG_CMD_MTDPARTS=y
++CONFIG_MTDIDS_DEFAULT="nmbm0=nmbm0"
++CONFIG_MTDPARTS_DEFAULT="mtdparts=nmbm0:1024k(bl2),512k(u-boot-env),4096k(factory),2048k(fip),256k(log),256k(CFG),483328k(ubi)"
++CONFIG_NMBM=y
++CONFIG_NMBM_MTD=y
++CONFIG_ARM_SMCCC=y
++CONFIG_DM_RNG=y
++CONFIG_RNG_MTK_V2=y
++CONFIG_CMD_RNG=y
++CONFIG_CMD_KASLRSEED=y
++CONFIG_KASLR_SEED_REQUIRED=y
++CONFIG_LZMA=y
++# CONFIG_CMD_SAVEENV is not set
++# CONFIG_CMD_ERASEENV is not set
++# CONFIG_BOARD_LATE_INIT is not set
+--- /dev/null
++++ b/arch/arm/dts/mt7987a-glinet-gl-mt3600be.dts
+@@ -0,0 +1,21 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/dts-v1/;
++#include "mt7987a.dtsi"
++#include <dt-bindings/input/input.h>
++
++/ {
++	model = "GL.iNet GL-MT3600BE (development BL33)";
++	compatible = "mediatek,mt7987", "mediatek,mt7987-spim-nand-rfb";
++	/* OpenWrt patch 195 duplicates the SoC TRNG node. */
++	/delete-node/ rng;
++	memory { reg = <0 0x40000000 0 0x20000000>; };
++	chosen { stdout-path = "serial0:115200n8"; };
++	gpio-keys {
++		compatible = "gpio-keys";
++		reset {
++			label = "reset";
++			linux,code = <KEY_RESTART>;
++			gpios = <&pio 4 GPIO_ACTIVE_LOW>;
++		};
++	};
++};
+--- /dev/null
++++ b/arch/arm/dts/mt7987a-glinet-gl-mt3600be-u-boot.dtsi
+@@ -0,0 +1,31 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "mt7987a-u-boot.dtsi"
++
++/* BL2 initializes DRAM; tzcfg.c obtains the secure reservation from BL31. */
++&spi0 { status = "disabled"; };
++&spi1 { status = "disabled"; };
++&spi2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi2_flash_pins>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++	must_tx;
++	enhance_timing;
++	dma_ext;
++	ipm_design;
++	support_quad;
++	tick_dly = <2>;
++	sample_sel = <0>;
++	spi_nand@0 {
++		compatible = "spi-nand";
++		reg = <0>;
++		spi-max-frequency = <52000000>;
++		spi-rx-bus-width = <4>;
++		spi-tx-bus-width = <4>;
++	};
++};
++&trng { status = "okay"; };
++&pcie0 { status = "disabled"; };
++&pcie1 { status = "disabled"; };
++&xhci { status = "disabled"; };
+--- a/arch/arm/dts/Makefile
++++ b/arch/arm/dts/Makefile
+@@ -1204,3 +1204,5 @@
+ 
+ DTC_FLAGS_imx8mp-dhcom-som-overlay-rev100 += -Wno-avoid_default_addr_size -Wno-reg_format
+ DTC_FLAGS_imx8mp-dhcom-pdk3-overlay-rev100 += -Wno-avoid_default_addr_size -Wno-reg_format
++
++dtb-$(CONFIG_TARGET_MT7987) += mt7987a-glinet-gl-mt3600be.dtb
+--- /dev/null
++++ b/board/mediatek/gl-mt3600be/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0
++obj-y += gl-mt3600be.o
+--- /dev/null
++++ b/board/mediatek/gl-mt3600be/gl-mt3600be.c
+@@ -0,0 +1,43 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#include <mtd.h>
++#include <linux/mtd/mtd.h>
++#include <nmbm/nmbm.h>
++#include <nmbm/nmbm-mtd.h>
++
++int board_nmbm_init(void)
++{
++	struct mtd_info *lower, *upper;
++	int ret;
++
++	mtd_probe_devices();
++	lower = get_mtd_device_nm("spi-nand0");
++	if (IS_ERR_OR_NULL(lower)) {
++		printf("Beryl7: NAND unavailable; use serial console\n");
++		return 0;
++	}
++	/* Refuse unexpected geometry rather than reinterpret the stock mapping. */
++	if (lower->size != 0x20000000ULL || lower->writesize != 4096 ||
++	    lower->erasesize != 0x40000 || lower->oobsize != 128) {
++		printf("Beryl7: unexpected NAND geometry; NMBM not attached\n");
++		put_mtd_device(lower);
++		return 0;
++	}
++	/* Never create or repair mapping tables in this development payload. */
++	ret = nmbm_attach_mtd(lower, NMBM_F_READ_ONLY |
++			      NMBM_F_EMPTY_PAGE_ECC_OK, 1, 256, &upper);
++	if (ret) {
++		printf("Beryl7: read-only NMBM attach failed: %d\n", ret);
++		put_mtd_device(lower);
++		return 0;
++	}
++	if (upper->size != 0x1e000000ULL) {
++		printf("Beryl7: unexpected NMBM size; not exposing mapping\n");
++		return 0;
++	}
++	/* UBI must also see read-only media, suppressing attach-time writes. */
++	upper->flags &= ~MTD_WRITEABLE;
++	ret = add_mtd_device(upper);
++	if (ret)
++		printf("Beryl7: cannot register NMBM: %d\n", ret);
++	return 0;
++}
+--- /dev/null
++++ b/defenvs/gl-mt3600be_env
+@@ -0,0 +1,5 @@
++bootcmd=run boot_stock
++boot_stock=if ubi part ubi 4096; then if ubi read 0x50000000 kernel; then bootm 0x50000000#config-1; else echo Beryl7: kernel read failed; fi; else echo Beryl7: UBI attach failed; fi
++loadaddr=0x48000000
++mtdids=nmbm0=nmbm0
++mtdparts=nmbm0:1024k(bl2),512k(u-boot-env),4096k(factory),2048k(fip),256k(log),256k(CFG),483328k(ubi)

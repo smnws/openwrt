@@ -1172,6 +1172,14 @@ define U-Boot/mt7987_glinet_gl-be10000
   DEPENDS:=+trusted-firmware-a-mt7987-spim-nand2-4k-ubi-comb-be10000 +mt7987-2p5g-phy-firmware
 endef
 
+define U-Boot/mt7987_glinet_gl-mt3600be
+  NAME:=GL.iNet Beryl 7 (GL-MT3600BE) development BL33
+  BUILD_SUBTARGET:=filogic
+  UBOOT_CONFIG:=mt7987_glinet_gl-mt3600be
+  UBOOT_IMAGE:=u-boot.bin
+  HIDDEN:=
+endef
+
 define U-Boot/mt7987_rfb-emmc
   NAME:=MT7987 Reference Board
   BUILD_SUBTARGET:=filogic
@@ -1607,6 +1615,7 @@ UBOOT_TARGETS := \
 	mt7987_bananapi_bpi-r4-lite-snand \
 	mt7987_bananapi_bpi-r4-lite-nor \
 	mt7987_glinet_gl-be10000 \
+	mt7987_glinet_gl-mt3600be \
 	mt7987_rfb-emmc \
 	mt7987_rfb-sd \
 	mt7987_rfb-spim-nand \
