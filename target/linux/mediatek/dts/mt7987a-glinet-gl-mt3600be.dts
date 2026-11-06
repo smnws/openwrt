@@ -88,6 +88,22 @@
 	};
 };
 
+&cpu0 {
+	proc-supply = <&vproc>;
+};
+
+&cpu1 {
+	proc-supply = <&vproc>;
+};
+
+&cpu2 {
+	proc-supply = <&vproc>;
+};
+
+&cpu3 {
+	proc-supply = <&vproc>;
+};
+
 &fan {
 	fan-supply = <&fan_3p3v>;
 	interrupt-parent = <&pio>;
